@@ -4,6 +4,7 @@ import moment from 'moment-strftime';
 
 import { Layout } from '../components/index';
 import { withPrefix, htmlToReact, markdownify } from '../utils';
+import { getPage, Link, getPageUrl } from '../utils';
 
 export default class Post extends React.Component {
     render() {
@@ -18,6 +19,7 @@ export default class Post extends React.Component {
         const dateTimeAttr = moment(date).strftime('%Y-%m-%d %H:%M');
         const formattedDate = moment(date).strftime('%A, %B %e, %Y');
         const markdownContent = _.get(page, 'markdown_content');
+        const alsoLikePost = page.also_like_post ? getPage(this.props.posts, page.also_like_post) : null;
 
         return (
             <Layout page={page} config={config}>
@@ -32,6 +34,16 @@ export default class Post extends React.Component {
                     </header>
                     {markdownContent && <div className="content">{markdownify(markdownContent)}</div>}
                 </section>
+                {alsoLikePost && (
+                    <section className="also-like">
+                        <header><h1>Liked this post?  You might also like:</h1></header>
+                        <Link key={'also-like'} href={getPageUrl(alsoLikePost, { withPrefix: true })} className="article-teaser">
+                            <ul className="copy">
+                                <li>{alsoLikePost.title}</li>
+                            </ul>
+                        </Link>
+                    </section>
+                )}
             </Layout>
         );
     }
